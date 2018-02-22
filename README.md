@@ -8,7 +8,7 @@ This is a rewrited script from https://www.altlinux.org/1C/MultiClient, adapted 
 Install any version of 1C:Enterprise first. Then you can download desired version from https://releases.1c.ru. Put "client.deb64.tar.gz" AND "deb64.tar.gz" (x64 client and server for DEB-based Linux systems) to any directory alongside this script and run ./1cmulti.sh.
 
 ## О сценарии
-Изменённый под архитектуру DEB-пакетов сценарий и вики АльтЛинукс: https://www.altlinux.org/1C/MultiClient.
+Изменённый под архитектуру DEB-пакетов сценарий с вики АльтЛинукс: https://www.altlinux.org/1C/MultiClient.
 Сценарий предназначен для удобной установки множественных версий 1С:Предприятие в Ubuntu Linux 16.04 (может работать и в других версиях дистрибутива). 
 
 ## Установка
