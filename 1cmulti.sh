@@ -23,19 +23,28 @@ PKG_ARCH=`echo $ARCH | sed -e 's/amd/deb/g'`
 # Имя пакета
 NAME="1c-enterprise83"
 
+# Защита от дурака, запускающего сценарий из корня ФС:
+
+if [[ $(pwd) = "/" ]]
+    then
+        echo "При запуске из / возможна потеря данных."
+        echo "Не запускайте этот сценарий так."
+        exit 1
+fi
+
 # Проверка на наличие исходных файлов
 # для парсера версии
 
 if ! [ -f $PKG_ARCH.tar.gz ]
     then
-    echo "Отсутствует архив с пакетами сервера $PKG_ARCH.tar.gz"
-    exit 1
+        echo "Отсутствует архив с пакетами сервера $PKG_ARCH.tar.gz"
+        exit 1
 fi
 
 if ! [ -f client.$PKG_ARCH.tar.gz ]
     then
-    echo "Отсутствует архив с пакетами клиента client.$PKG_ARCH.tar.gz"
-    exit 1
+        echo "Отсутствует архив с пакетами клиента client.$PKG_ARCH.tar.gz"
+        exit 1
 fi
 
 # Если архивы найдены, пробуем их распаковать.
@@ -43,34 +52,34 @@ echo "Распаковываем архивы..."
 
 tar xfz "$PKG_ARCH.tar.gz"
 if [[ $? != 0 ]]
-then
-    # Если код возврата не равен нулю, tar завершился с ошибкой
-    # Прерываем выполнение сценария
-    echo "Ошибка tar при распаковке $PKG_ARCH.tar.gz"
-    exit 1
+    then
+        # Если код возврата не равен нулю, tar завершился с ошибкой
+        # Прерываем выполнение сценария
+        echo "Ошибка tar при распаковке $PKG_ARCH.tar.gz"
+        exit 1
 fi
 
 tar xfz "client.$PKG_ARCH.tar.gz"
 if [[ $? != 0 ]]
-then
-    # Если код возврата не равен нулю, tar завершился с ошибкой
-    # Прерываем выполнение сценария
-    echo "Ошибка tar при распаковке client.$PKG_ARCH.tar.gz"
-    exit 1
+    then
+        # Если код возврата не равен нулю, tar завершился с ошибкой
+        # Прерываем выполнение сценария
+        echo "Ошибка tar при распаковке client.$PKG_ARCH.tar.gz"
+        exit 1
 fi
 
 # Проверяем, есть ли распакованные пакеты.
 find ./ -name "$NAME-client*.deb" | egrep '.*'
 if [[ $? != 0 ]]
-then
-    echo "Пакет $NAME не найден"
-    exit 1
-else
-    echo "Пакет $NAME найден..."
-    echo "Парсим версию..."
+    then
+        echo "Пакет $NAME не найден"
+        exit 1
+    else
+        echo "Пакет $NAME найден..."
+        echo "Парсим версию..."
 
-    # Извлечение версии пакета из имени
-    VERSION=`ls $NAME-client* | head -1 | sed -e 's/'_"$ARCH"'//g' -e 's/^.*client_//g' -e 's/\.[^.]*$//'`
+        # Извлечение версии пакета из имени
+        VERSION=`ls $NAME-client* | head -1 | sed -e 's/'_"$ARCH"'//g' -e 's/^.*client_//g' -e 's/\.[^.]*$//'`
 
 fi
 
@@ -83,40 +92,40 @@ echo "Версия:"$VERSION
 # Проверяем наличие всех требуемых пакетов
 
 if ! [ -f "$NAME-client_"$VERSION"_"$ARCH".deb" ]
-then
-    echo "$NAME-client_"$VERSION"_"$ARCH".deb не найден"
-    echo "Проверьте наличие всех пакетов"
-    #exit 1
-else
-    echo "$NAME-client_"$VERSION"_"$ARCH".deb НАЙДЕН!"
+    then
+        echo "$NAME-client_"$VERSION"_"$ARCH".deb не найден"
+        echo "Проверьте наличие всех пакетов"
+        #exit 1
+    else
+        echo "$NAME-client_"$VERSION"_"$ARCH".deb НАЙДЕН!"
 fi
 
 if ! [ -f "$NAME-client-nls_"$VERSION"_"$ARCH".deb" ]
-then
-    echo "$NAME-client-nls_"$VERSION"_"$ARCH".deb не найден"
-    echo "Проверьте наличие всех пакетов"
-    #exit 1
-else
-    echo "$NAME-client-nls_"$VERSION"_"$ARCH".deb НАЙДЕН"
+    then
+        echo "$NAME-client-nls_"$VERSION"_"$ARCH".deb не найден"
+        echo "Проверьте наличие всех пакетов"
+        #exit 1
+    else
+        echo "$NAME-client-nls_"$VERSION"_"$ARCH".deb НАЙДЕН"
 fi
 
 if ! [ -f "$NAME-server_"$VERSION"_"$ARCH".deb" ]
-then
-    echo "$NAME-server_"$VERSION"_"$ARCH".deb не найден"
-    echo "Проверьте наличие всех пакетов"
-    #exit 1
-else
-    echo "$NAME-server_"$VERSION"_"$ARCH".deb НАЙДЕН!"
+    then
+        echo "$NAME-server_"$VERSION"_"$ARCH".deb не найден"
+        echo "Проверьте наличие всех пакетов"
+        #exit 1
+    else
+        echo "$NAME-server_"$VERSION"_"$ARCH".deb НАЙДЕН!"
 fi
 
 if ! [ -f "$NAME-server-nls_"$VERSION"_"$ARCH".deb" ]
-then
-    echo "$NAME-server-nls_"$VERSION"_"$ARCH".deb не найден"
-    echo "Проверьте наличие всех пакетов"
-    #exit 1
-else
-    echo "$NAME-server-nls_"$VERSION"_"$ARCH".deb НАЙДЕН!"
-    fi
+    then
+        echo "$NAME-server-nls_"$VERSION"_"$ARCH".deb не найден"
+        echo "Проверьте наличие всех пакетов"
+        #exit 1
+    else
+        echo "$NAME-server-nls_"$VERSION"_"$ARCH".deb НАЙДЕН!"
+fi
 
 echo "Все пакеты найдены!"
 echo " "
@@ -158,11 +167,11 @@ echo "Icon=1cestart" >> "$DESKTOPFILE"
 
 # Если пользователь согласился на установку:
 if [[ $SETUP != 0 ]]
-then
-    sudo mv "opt/1C/v8.3" "/opt/1C/"v$VERSION
-    sudo desktop-file-install "1cestart.$VERSION.desktop"
-else
-    tar -cpzf 1C_$VERSION.tgz opt
+    then
+        sudo mv "opt/1C/v8.3" "/opt/1C/"v$VERSION
+        sudo desktop-file-install "1cestart.$VERSION.desktop"
+    else
+        tar -cpzf 1C_$VERSION.tgz opt
 fi    
 
 echo "Очистить установочные файлы (*.deb, *.desktop)? (Y/n)"
@@ -172,7 +181,7 @@ read item
 case "$item" in
     y|Y) rm -rf opt/ etc/ usr/; rm ./*.deb ./*.desktop
         ;;
-    n|N) :
+    n|N) : #Ничего не делаем
         ;;
     *) rm -rf opt/ etc/ usr/; rm ./*.deb ./*.desktop
         ;;
