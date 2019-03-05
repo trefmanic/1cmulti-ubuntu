@@ -52,7 +52,7 @@ fi
 # Если архивы найдены, пробуем их распаковать.
 echo "Распаковываем архивы..."
 
-tar xfz "$PKG_ARCH.tar.gz"
+tar xfz "$PKG_ARCH"*.tar.gz
 if [[ $? != 0 ]]
     then
         # Если код возврата не равен нулю, tar завершился с ошибкой
@@ -61,7 +61,7 @@ if [[ $? != 0 ]]
         exit 1
 fi
 
-tar xfz "client.$PKG_ARCH.tar.gz"
+tar xfz client*."$PKG_ARCH".tar.gz
 if [[ $? != 0 ]]
     then
         # Если код возврата не равен нулю, tar завершился с ошибкой
