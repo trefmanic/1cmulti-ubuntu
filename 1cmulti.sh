@@ -35,13 +35,15 @@ fi
 # Проверка на наличие исходных файлов
 # для парсера версии
 
-if ! [ -f $PKG_ARCH.tar.gz ]
+# Фикс для новых вариаций наименования архивов
+
+if ! [ -f $PKG_ARCH*.tar.gz ]
     then
         echo "Отсутствует архив с пакетами сервера $PKG_ARCH.tar.gz"
         exit 1
 fi
 
-if ! [ -f client.$PKG_ARCH.tar.gz ]
+if ! [ -f client*.$PKG_ARCH.tar.gz ]
     then
         echo "Отсутствует архив с пакетами клиента client.$PKG_ARCH.tar.gz"
         exit 1
@@ -144,10 +146,10 @@ esac
 
 # Распаковка пакетов
 echo "Подождите, распаковка пакетов..."
-dpkg -x $NAME"-client_"$VERSION"_"$ARCH".deb" . 
-dpkg -x $NAME"-client-nls_"$VERSION"_"$ARCH".deb" . 
-dpkg -x $NAME"-server_"$VERSION"_"$ARCH".deb" . 
-dpkg -x $NAME"-common_"$VERSION"_"$ARCH".deb" . 
+dpkg -x $NAME"-client_"$VERSION"_"$ARCH".deb" .
+dpkg -x $NAME"-client-nls_"$VERSION"_"$ARCH".deb" .
+dpkg -x $NAME"-server_"$VERSION"_"$ARCH".deb" .
+dpkg -x $NAME"-common_"$VERSION"_"$ARCH".deb" .
 
 # Генерация файла .desktop
 DESKTOPFILE="1cestart.$VERSION.desktop"
@@ -172,7 +174,7 @@ if [[ $SETUP != 0 ]]
         sudo desktop-file-install "1cestart.$VERSION.desktop"
     else
         tar -cpzf 1C_$VERSION.tgz opt
-fi    
+fi
 
 echo "Очистить установочные файлы (*.deb, *.desktop)? (Y/n)"
 
