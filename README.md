@@ -25,4 +25,4 @@ You can use this script to install 1C:Enterprise system-wide. For this, the supe
 
      tar -xzvf 1С_$VERSION.tgz -C /
 
-    
+     
