@@ -24,3 +24,5 @@ Install any version of 1C:Enterprise (using packages from the official [release 
 You can use this script to install 1C:Enterprise system-wide. For this, the superuser privileges will be required (you will be asked your password for running with elevated privileges via sudo). If you don't have those privileges or choose not to install the package system-wide, you will get an archive, which could be installed manually:
 
      tar -xzvf 1С_$VERSION.tgz -C /
+
+    
