@@ -17,7 +17,7 @@ ARCH=amd64
 PKG_ARCH=`echo $ARCH | sed -e 's/amd/deb/g'`
 
 # Имя пакета
-NAME="1c-enterprise83"
+NAME="1c-enterprise"
 
 # Защита от дурака, запускающего сценарий из корня ФС:
 
@@ -67,7 +67,7 @@ if [[ $? != 0 ]]
 fi
 
 # Проверяем, есть ли распакованные пакеты.
-find ./ -name "$NAME-client*.deb" | egrep '.*'
+find ./ -name "$NAME*-client*.deb" | egrep '.*'
 if [[ $? != 0 ]]
     then
         echo "Пакет $NAME не найден"
@@ -77,7 +77,10 @@ if [[ $? != 0 ]]
         echo "Парсим версию..."
 
         # Извлечение версии пакета из имени
-        VERSION=`ls $NAME-client* | head -1 | sed -e 's/'_"$ARCH"'//g' -e 's/^.*client_//g' -e 's/\.[^.]*$//'`
+        VERSION=$(ls --color=never $NAME*-client* | head -1 | sed -e "s/$NAME-//g" -e 's/-.*$//g')
+        # Дополнительное колдунство, так как 1С не может определиться
+        # как именовать пакеты
+        VERSIONWITHDASH=$(echo $VERSION | sed -E 's/(.*)\./\1-/')
 
 fi
 
@@ -86,43 +89,43 @@ echo "Версия:"$VERSION
 # DEBUG
 # exit 0
 
-
+# TODO: упаковать в case
 # Проверяем наличие всех требуемых пакетов
 
-if ! [ -f "$NAME-client_"$VERSION"_"$ARCH".deb" ]
+if ! [ -f "$NAME-$VERSION-client_"$VERSIONWITHDASH"_$ARCH.deb" ]
     then
-        echo "$NAME-client_"$VERSION"_"$ARCH".deb не найден"
+        echo "$NAME-$VERSION-client_"$VERSIONWITHDASH"_$ARCH.deb не найден"
         echo "Проверьте наличие всех пакетов"
-        #exit 1
+        exit 1
     else
-        echo "$NAME-client_"$VERSION"_"$ARCH".deb НАЙДЕН!"
+        echo "$NAME-$VERSION-client_"$VERSIONWITHDASH"_$ARCH.deb НАЙДЕН"
 fi
 
-if ! [ -f "$NAME-client-nls_"$VERSION"_"$ARCH".deb" ]
+if ! [ -f "$NAME-$VERSION-client-nls_"$VERSIONWITHDASH"_$ARCH.deb" ]
     then
-        echo "$NAME-client-nls_"$VERSION"_"$ARCH".deb не найден"
+        echo "$NAME-$VERSION-client-nls_"$VERSIONWITHDASH"_$ARCH.deb не найден"
         echo "Проверьте наличие всех пакетов"
-        #exit 1
+        exit 1
     else
-        echo "$NAME-client-nls_"$VERSION"_"$ARCH".deb НАЙДЕН"
+        echo "$NAME-$VERSION-client-nls_"$VERSIONWITHDASH"_$ARCH.deb НАЙДЕН"
 fi
 
-if ! [ -f "$NAME-server_"$VERSION"_"$ARCH".deb" ]
+if ! [ -f "$NAME-$VERSION-server_"$VERSIONWITHDASH"_$ARCH.deb" ]
     then
-        echo "$NAME-server_"$VERSION"_"$ARCH".deb не найден"
+        echo "$NAME-$VERSION-server_"$VERSIONWITHDASH"_$ARCH.deb не найден"
         echo "Проверьте наличие всех пакетов"
-        #exit 1
+        exit 1
     else
-        echo "$NAME-server_"$VERSION"_"$ARCH".deb НАЙДЕН!"
+        echo "$NAME-$VERSION-server_"$VERSIONWITHDASH"_$ARCH.deb НАЙДЕН"
 fi
 
-if ! [ -f "$NAME-server-nls_"$VERSION"_"$ARCH".deb" ]
+if ! [ -f "$NAME-$VERSION-server-nls_"$VERSIONWITHDASH"_$ARCH.deb" ]
     then
-        echo "$NAME-server-nls_"$VERSION"_"$ARCH".deb не найден"
+        echo "$NAME-$VERSION-server-nls_"$VERSIONWITHDASH"_$ARCH.deb не найден"
         echo "Проверьте наличие всех пакетов"
-        #exit 1
+        exit 1
     else
-        echo "$NAME-server-nls_"$VERSION"_"$ARCH".deb НАЙДЕН!"
+        echo "$NAME-$VERSION-server-nls_"$VERSIONWITHDASH"_$ARCH.deb НАЙДЕН"
 fi
 
 echo "Все пакеты найдены!"
@@ -142,10 +145,10 @@ esac
 
 # Распаковка пакетов
 echo "Подождите, распаковка пакетов..."
-dpkg -x $NAME"-client_"$VERSION"_"$ARCH".deb" .
-dpkg -x $NAME"-client-nls_"$VERSION"_"$ARCH".deb" .
-dpkg -x $NAME"-server_"$VERSION"_"$ARCH".deb" .
-dpkg -x $NAME"-common_"$VERSION"_"$ARCH".deb" .
+dpkg -x "$NAME-$VERSION-client_"$VERSIONWITHDASH"_$ARCH.deb" .
+dpkg -x "$NAME-$VERSION-client-nls_"$VERSIONWITHDASH"_$ARCH.deb" .
+dpkg -x "$NAME-$VERSION-server_"$VERSIONWITHDASH"_$ARCH.deb" .
+dpkg -x "$NAME-$VERSION-server-nls_"$VERSIONWITHDASH"_$ARCH.deb" .
 
 # Генерация файла .desktop
 DESKTOPFILE="1cestart.$VERSION.desktop"
@@ -157,19 +160,19 @@ echo "[Desktop Entry]" >> "$DESKTOPFILE"
 echo "Version=1.0" >> "$DESKTOPFILE"
 echo "Type=Application" >> "$DESKTOPFILE"
 echo "Terminal=false" >> "$DESKTOPFILE"
-echo "Exec=/opt/1C/v"$VERSION"/x86_64/1cestart" >> "$DESKTOPFILE"
+echo "Exec=/opt/1C/v""$VERSIONWITHDASH""/x86_64/1cestart" >> "$DESKTOPFILE"
 echo "Categories=Office;Finance;" >> "$DESKTOPFILE"
-echo "Name[ru_RU]=1C:Предприятие "$VERSION >> "$DESKTOPFILE"
-echo "Name=1C:Enterprise "$VERSION >> "$DESKTOPFILE"
+echo "Name[ru_RU]=1C:Предприятие ""$VERSIONWITHDASH" >> "$DESKTOPFILE"
+echo "Name=1C:Enterprise ""$VERSIONWITHDASH" >> "$DESKTOPFILE"
 echo "Icon=1cestart" >> "$DESKTOPFILE"
 
 # Если пользователь согласился на установку:
 if [[ $SETUP != 0 ]]
     then
-        sudo mv "opt/1C/v8.3" "/opt/1C/"v$VERSION
-        sudo desktop-file-install "1cestart.$VERSION.desktop"
+        sudo mv "opt/1C/v8.3" "/opt/1C/"v"$VERSIONWITHDASH"
+        sudo desktop-file-install "1cestart."$VERSIONWITHDASH".desktop"
     else
-        tar -cpzf 1C_$VERSION.tgz opt
+        tar -cpzf 1C_"$VERSIONWITHDASH".tgz opt
 fi
 
 echo "Очистить установочные файлы (*.deb, *.desktop)? (Y/n)"
