@@ -14,7 +14,7 @@
 
 # Архитектура системы
 ARCH=amd64
-PKG_ARCH=`echo $ARCH | sed -e 's/amd/deb/g'`
+PKG_ARCH=$(echo $ARCH | sed -e 's/amd/deb/g')
 
 # Имя пакета
 NAME="1c-enterprise"
@@ -151,7 +151,7 @@ dpkg -x "$NAME-$VERSION-server_"$VERSIONWITHDASH"_$ARCH.deb" .
 dpkg -x "$NAME-$VERSION-server-nls_"$VERSIONWITHDASH"_$ARCH.deb" .
 
 # Генерация файла .desktop
-DESKTOPFILE="1cestart.$VERSION.desktop"
+DESKTOPFILE="1cestart.""$VERSIONWITHDASH"".desktop"
 touch "$DESKTOPFILE"
 
 #DEBUG
@@ -160,17 +160,17 @@ echo "[Desktop Entry]" >> "$DESKTOPFILE"
 echo "Version=1.0" >> "$DESKTOPFILE"
 echo "Type=Application" >> "$DESKTOPFILE"
 echo "Terminal=false" >> "$DESKTOPFILE"
-echo "Exec=/opt/1C/v""$VERSIONWITHDASH""/x86_64/1cestart" >> "$DESKTOPFILE"
+echo "Exec=/opt/1C/v"$VERSIONWITHDASH"/1cestart" >> "$DESKTOPFILE"
 echo "Categories=Office;Finance;" >> "$DESKTOPFILE"
-echo "Name[ru_RU]=1C:Предприятие ""$VERSIONWITHDASH" >> "$DESKTOPFILE"
-echo "Name=1C:Enterprise ""$VERSIONWITHDASH" >> "$DESKTOPFILE"
+echo "Name[ru_RU]=1C:Предприятие" "$VERSIONWITHDASH" >> "$DESKTOPFILE"
+echo "Name=1C:Enterprise" "$VERSIONWITHDASH" >> "$DESKTOPFILE"
 echo "Icon=1cestart" >> "$DESKTOPFILE"
 
 # Если пользователь согласился на установку:
 if [[ $SETUP != 0 ]]
     then
-        sudo mv "opt/1C/v8.3" "/opt/1C/"v"$VERSIONWITHDASH"
-        sudo desktop-file-install "1cestart."$VERSIONWITHDASH".desktop"
+        sudo mv "opt/1cv8/x86_64/$VERSION" "/opt/1C/v""$VERSIONWITHDASH"
+        sudo desktop-file-install "1cestart.""$VERSIONWITHDASH"".desktop"
     else
         tar -cpzf 1C_"$VERSIONWITHDASH".tgz opt
 fi
